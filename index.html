@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المحلل الفلكي الذكي 🌌</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-10 mt-5">
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-2">
+                المحلل الفلكي الذكي 🌌
+            </h1>
+            <p class="text-slate-400">تحليل فلكي دقيق للأسهم السعودية</p>
+        </header>
+
+        <div class="mb-6 relative">
+            <input type="text" id="search" placeholder="🔍 ابحث عن اسم السهم..." 
+                   class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 focus:border-purple-500 focus:outline-none text-lg shadow-lg transition-all">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="stockGrid">
+            {% for stock in stocks %}
+            <a href="/stock/{{ stock }}" class="stock-card glass p-5 rounded-2xl hover:bg-slate-800 transition-all duration-300 transform hover:-translate-y-1 shadow-md group">
+                <div class="flex justify-between items-center">
+                    <span class="text-xl font-bold group-hover:text-purple-400 transition-colors">{{ stock }}</span>
+                    <span class="text-2xl opacity-50 group-hover:opacity-100">📈</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('search').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.stock-card').forEach(card => {
+                const text = card.innerText.toLowerCase();
+                card.style.display = text.includes(term) ? 'block' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

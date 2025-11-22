@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحليل {{ stock_name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body class="min-h-screen p-4 pb-20">
+    <div class="max-w-3xl mx-auto">
+        <!-- Header & Nav -->
+        <div class="flex justify-between items-center mb-8">
+            <a href="/" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">🏠 الرئيسية</a>
+            <h1 class="text-2xl font-bold text-purple-400">{{ stock_name }}</h1>
+        </div>
+
+        <!-- Date & Rating -->
+        <div class="glass rounded-2xl p-6 mb-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+            <h2 class="text-slate-400 mb-2">تاريخ التحليل: {{ date }}</h2>
+            <div class="text-3xl font-bold {{ rating_color }} mb-4">{{ rating }}</div>
+            
+            <!-- Date Navigation -->
+            <div class="flex justify-center gap-4 mt-4">
+                <button onclick="changeDate(-1)" class="px-4 py-2 bg-slate-700 rounded-lg hover:bg-slate-600">⬅️ السابق</button>
+                <input type="date" id="datePicker" value="{{ date }}" class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-center">
+                <button onclick="changeDate(1)" class="px-4 py-2 bg-slate-700 rounded-lg hover:bg-slate-600">التالي ➡️</button>
+            </div>
+        </div>
+
+        <!-- Analysis Cards -->
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold mb-4 border-b border-slate-700 pb-2">🎯 التأثيرات الفلكية (Transit to Natal)</h3>
+            
+            {% if not results %}
+            <div class="text-center p-10 text-slate-500 bg-slate-800/50 rounded-xl">
+                لا توجد اتصالات فلكية مؤثرة لهذا اليوم 🌑
+            </div>
+            {% else %}
+            
+            {% for res in results %}
+            <div class="glass rounded-xl p-5 hover:bg-slate-800/80 transition-all border-r-4 {% if 'تربيع' in res.aspect or 'مقابلة' in res.aspect %}border-red-500{% elif 'تثليث' in res.aspect or 'تسديس' in res.aspect %}border-green-500{% else %}border-yellow-500{% endif %}">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">{{ res.icon }}</span>
+                        <div>
+                            <div class="font-bold text-lg">
+                                <span class="text-purple-300">{{ res.t_planet }}</span> 
+                                <span class="text-sm text-slate-400 mx-1">(العبور)</span>
+                                {{ res.aspect }} 
+                                <span class="text-pink-300">{{ res.n_planet }}</span>
+                                <span class="text-sm text-slate-400 mx-1">(السهم)</span>
+                            </div>
+                            <div class="text-xs text-slate-400 mt-1">⏱️ الفريم: {{ res.timeframe }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 text-sm bg-slate-900/50 p-3 rounded-lg mb-3">
+                    <div>
+                        <span class="text-slate-500 block">موقع العبور:</span>
+                        {{ res.t_sign }} {{ res.t_deg }}° <span class="text-yellow-500">{{ res.t_status }}</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 block">موقع السهم:</span>
+                        {{ res.n_sign }} {{ res.n_deg }}°
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 text-sm text-blue-300 bg-blue-900/20 p-2 rounded border border-blue-900/50">
+                    <span>⏰</span>
+                    {{ res.time_str }}
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        const datePicker = document.getElementById('datePicker');
+        datePicker.addEventListener('change', (e) => {
+            window.location.href = `?date=${e.target.value}`;
+        });
+
+        function changeDate(days) {
+            const current = new Date(datePicker.value);
+            current.setDate(current.getDate() + days);
+            window.location.href = `?date=${current.toISOString().split('T')[0]}`;
+        }
+    </script>
+</body>
+</html>
