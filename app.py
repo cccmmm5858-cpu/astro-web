@@ -1,11 +1,28 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import pandas as pd
 import os
 import datetime
+from functools import wraps
 
 app = Flask(__name__)
+app.secret_key = 'super_secret_key_astro_bot_2025'  # مفتاح تشفير الجلسات
 
-# --- الثوابت الفلكية (نفس الموجودة في البوت) ---
+# --- بيانات الدخول (مؤقتاً هنا) ---
+USERS = {
+    "admin": "123456",   # اسم المستخدم وكلمة المرور
+    "user1": "astro2025"
+}
+
+# --- دوال الحماية ---
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# --- الثوابت الفلكية (كما هي) ---
 TRANSIT_PLANETS = [
     ("الشمس",  "Sun Lng"), ("القمر",  "Moon Lng"), ("عطارد",  "Mercury Lng"),
     ("الزهرة", "Venus Lng"), ("المريخ", "Mars Lng"), ("المشتري", "Jupiter Lng"),
@@ -151,13 +168,32 @@ def calc_stock_aspects(stock_name, target_date):
     return results, sdf["السهم"].iloc[0]
 
 # --- المسارات (Routes) ---
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if username in USERS and USERS[username] == password:
+            session['user'] = username
+            return redirect(url_for('index'))
+        else:
+            flash('❌ اسم المستخدم أو كلمة المرور خطأ!')
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('login'))
+
 @app.route('/')
+@login_required
 def index():
     if GLOBAL_STOCK_DF is None: load_data()
     stocks = sorted(GLOBAL_STOCK_DF["السهم"].unique()) if GLOBAL_STOCK_DF is not None else []
     return render_template('index.html', stocks=stocks)
 
 @app.route('/stock/<path:stock_name>')
+@login_required
 def stock_detail(stock_name):
     if GLOBAL_STOCK_DF is None: load_data()
     date_str = request.args.get('date', datetime.date.today().strftime('%Y-%m-%d'))
