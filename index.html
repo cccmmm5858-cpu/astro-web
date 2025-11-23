@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+{% set gold_stocks = stocks | selectattr("rating_val", "equalto", 5) | list %}
+{% if gold_stocks %}
+<div class="card" style="background: rgba(34, 197, 94, 0.1); border-color: #22c55e;">
+    <h3 style="color: #22c55e;">🔥 فرص ذهبية اليوم!</h3>
+    <div style="display: flex; gap: 1rem; overflow-x: auto; padding-top: 1rem;">
+        {% for stock in gold_stocks %}
+        <a href="{{ url_for('stock_detail', stock_name=stock.name) }}" style="background: rgba(0,0,0,0.3); padding: 0.5rem 1rem; border-radius: 8px; color: white; text-decoration: none;">
+            {{ stock.name }} ⭐⭐⭐⭐⭐
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div style="text-align: center; margin-bottom: 2rem;">
+    <h1>لوحة التحكم الفلكية</h1>
+    <div style="margin-top: 1rem;">
+        <a href="{{ url_for('index') }}" style="color: white; margin: 0 10px; text-decoration: none; border: 1px solid #94a3b8; padding: 5px 15px; border-radius: 20px;">الكل</a>
+        <a href="{{ url_for('index', rating='gold') }}" style="color: #22c55e; margin: 0 10px; text-decoration: none; border: 1px solid #22c55e; padding: 5px 15px; border-radius: 20px;">الفرص الذهبية</a>
+        <a href="{{ url_for('index', rating='strong') }}" style="color: #38bdf8; margin: 0 10px; text-decoration: none; border: 1px solid #38bdf8; padding: 5px 15px; border-radius: 20px;">الفرص القوية</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="stock-grid">
+        {% for stock in stocks %}
+        <a href="{{ url_for('stock_detail', stock_name=stock.name) }}" class="card stock-card">
+            <span class="stock-icon">📈</span>
+            <span class="stock-name">{{ stock.name }}</span>
+            <div class="{{ stock.rating_color }}" style="font-size: 0.9rem; margin-top: 0.5rem;">{{ stock.rating_text }}</div>
+        </a>
+        {% else %}
+        <p style="text-align: center;">لا توجد أسهم تطابق الفلتر.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

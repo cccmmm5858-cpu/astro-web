@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <a href="{{ url_for('index') }}" style="color: #94a3b8; text-decoration: none;">➡️ عودة</a>
+    
+    <!-- خانة التاريخ -->
+    <form action="{{ url_for('stock_detail', stock_name=stock_name) }}" method="get" style="display: flex; gap: 10px; align-items: center;">
+        <label style="color: #38bdf8;">تاريخ التحليل:</label>
+        <input type="date" name="date" value="{{ date }}" class="form-control" style="width: auto; margin: 0;" onchange="this.form.submit()">
+    </form>
+</div>
+
+<h1 style="margin: 1rem 0; text-align: center;">{{ stock_name }}</h1>
+
+<div class="card" style="text-align: center; border: 1px solid #38bdf8;">
+    <h2 style="color: #94a3b8; font-size: 1.2rem;">التقييم الفلكي</h2>
+    <div style="font-size: 2.5rem; margin: 1rem 0;" class="{{ rating_color }}">
+        {{ rating }}
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">تفاصيل الاتصالات</h3>
+    
+    {% if results %}
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; min-width: 800px;">
+            <thead>
+                <tr style="background: rgba(255,255,255,0.05);">
+                    <th>الوقت</th>
+                    <th>الفريم</th>
+                    <th>كوكب العبور</th>
+                    <th>العلاقة</th>
+                    <th>كوكب السهم</th> <!-- تمت الإضافة -->
+                    <th>التفاصيل</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for res in results %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="direction: ltr; color: #fbbf24;">{{ res.time_str }}</td>
+                    <td><span style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px;">{{ res.timeframe }}</span></td>
+                    <td style="color: #38bdf8;">{{ res.t_planet }} <span style="font-size: 0.8rem; color: #94a3b8;">{{ res.t_status }}</span></td>
+                    <td style="font-size: 1.1rem;">{{ res.icon }} {{ res.aspect }}</td>
+                    <td style="font-weight: bold; color: #e2e8f0;">{{ res.n_planet }}</td> <!-- تمت الإضافة -->
+                    <td style="font-size: 0.9rem; color: #94a3b8;">
+                        <div>عبور: {{ res.t_sign }} ({{ res.t_deg }}°)</div>
+                        <div>سهم: {{ res.n_sign }} ({{ res.n_deg }}°)</div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="text-align: center; padding: 2rem;">لا توجد اتصالات في هذا التاريخ.</p>
+    {% endif %}
+</div>
+{% endblock %}

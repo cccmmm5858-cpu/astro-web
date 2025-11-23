@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="card">
+    <h2>⚙️ لوحة إدارة الملفات</h2>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background: rgba(34,197,94,0.1); color: #4ade80; padding: 1rem; margin: 1rem 0;">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form method="post" enctype="multipart/form-data" style="margin-top: 2rem;">
+        <div style="margin-bottom: 2rem;">
+            <label>ملف الأسهم (Stock.xlsx):</label><br>
+            <input type="file" name="stock_file" class="form-control" accept=".xlsx">
+        </div>
+        <div style="margin-bottom: 2rem;">
+            <label>ملف العبور (Transit.xlsx):</label><br>
+            <input type="file" name="transit_file" class="form-control" accept=".xlsx">
+        </div>
+        <button type="submit" class="btn-login" style="background: #fbbf24; color: black;">تحديث البيانات 📤</button>
+    </form>
+</div>
+{% endblock %}

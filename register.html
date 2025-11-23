@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تسجيل جديد</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body style="justify-content: center; align-items: center;">
+    <div class="card" style="width: 100%; max-width: 400px; text-align: center;">
+        <h1>إنشاء حساب</h1>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="color: #fca5a5; margin-bottom: 10px;">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="post">
+            <input type="text" name="username" class="form-control" placeholder="اسم المستخدم" required>
+            <input type="password" name="password" class="form-control" placeholder="كلمة المرور" required>
+            <button type="submit" class="btn-login">تسجيل</button>
+        </form>
+        <p style="margin-top: 1rem;">لديك حساب؟ <a href="{{ url_for('login') }}" style="color: #38bdf8;">دخول</a></p>
+    </div>
+</body>
+</html>
