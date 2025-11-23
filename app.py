@@ -7,22 +7,23 @@ from functools import wraps
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_astro_bot_2025'  # مفتاح تشفير الجلسات
 
-# --- بيانات الدخول (مؤقتاً هنا) ---
-USERS = {
-    "admin": "123456",   # اسم المستخدم وكلمة المرور
-    "user1": "astro2025"
-}
+# ==========================================
+# إعدادات تسجيل الدخول (غيرها من هنا)
+# ==========================================
+APP_USERNAME = "Hakim50"   # اسم المستخدم
+APP_PASSWORD = "Hh499741"     # كلمة المرور
+# ==========================================
 
 # --- دوال الحماية ---
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'user' not in session:
+        if 'logged_in' not in session:
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
 
-# --- الثوابت الفلكية (كما هي) ---
+# --- الثوابت الفلكية ---
 TRANSIT_PLANETS = [
     ("الشمس",  "Sun Lng"), ("القمر",  "Moon Lng"), ("عطارد",  "Mercury Lng"),
     ("الزهرة", "Venus Lng"), ("المريخ", "Mars Lng"), ("المشتري", "Jupiter Lng"),
@@ -32,7 +33,7 @@ TRANSIT_PLANETS = [
 ]
 
 TRANSIT_TIMEFRAMES = {
-    "القمر": "15m / 1H", "الشمس": "4H / 10H", "عطارد": "1H / 4H",
+    "القمر": "15m / 1H", "الشمس": "4H / 1Day", "عطارد": "1H / 4H",
     "الزهرة": "1H / 4H", "المريخ": "4H / 1Day", "المشتري": "1W",
     "زحل": "1W", "أورانوس": "1M", "نبتون": "1M", "بلوتو": "1M",
     "العقدة الشمالية": "1W", "العقدة الجنوبية": "1W",
@@ -173,8 +174,9 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        if username in USERS and USERS[username] == password:
-            session['user'] = username
+        # التحقق باستخدام المتغيرات الجديدة
+        if username == APP_USERNAME and password == APP_PASSWORD:
+            session['logged_in'] = True
             return redirect(url_for('index'))
         else:
             flash('❌ اسم المستخدم أو كلمة المرور خطأ!')
@@ -182,7 +184,7 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
+    session.pop('logged_in', None)
     return redirect(url_for('login'))
 
 @app.route('/')
